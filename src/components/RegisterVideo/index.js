@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import React from "react";
 import { StyledRegisterVideo } from "./sytles";
 
@@ -21,9 +22,17 @@ function useForm(propsDpForm) {
     };
 }
 
+const PROJECT_URL = ""
+const PUBLIC_KEY = ""
+const supabase = createClient(PROJECT_URL, PUBLIC_KEY);
+
+function getThumbnail(url) {
+    return `https://img.youtube.com/vi/${url.split("v=")[1]}/hqdefault.jpg`;
+}
+
 export default function RegisterVideo() {
     const formCadastro = useForm({
-        initialValues : { titulo: "Frost punk", url: "https://youtube.."}
+        initialValues : { titulo: "Frost punk", url: "https://www.youtube.com/watch?v=QsqatJxAUtk"}
     });
     const [formVisivel, setFormVisivel] = React.useState(true);
 
@@ -37,6 +46,19 @@ export default function RegisterVideo() {
                     <form onSubmit={(event) => {
                         event.preventDefault();
                         console.log(formCadastro.values);
+
+                        supabase.from("video").insert({
+                            title: formCadastro.values.titulo,
+                            url: formCadastro.values.url,
+                            thumb: getThumbnail(formCadastro.values.url),
+                            playlist: "jogos",
+                        })
+                        .then((oquevio) => {
+                            console.log(oquevio);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        })
                         setFormVisivel(false);
                         formCadastro.clearForm();
                     }}>
